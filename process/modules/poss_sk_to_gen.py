@@ -8,7 +8,7 @@ from typing import List
 from process.module import ParaphraseModule
 from process.preprocessing_utils import PreprocessingUtils
 
-class LocGenitiveToPossModule(ParaphraseModule):
+class PossSkAdjToGenetiveModule(ParaphraseModule):
     def __init__(self, name="poss_sk_to_gen") -> None:
         super().__init__(name=name)
         self.morph = pymorphy2.MorphAnalyzer()
@@ -29,8 +29,8 @@ class LocGenitiveToPossModule(ParaphraseModule):
             adjectives_dictionary = verbs_data['sk adjectives']
         return adjectives_dictionary
     
-    def detect_sk_adj_sentence(self, sentence): 
-    doc = self.preproc_utils.stanza_model(sentence)
+    def detect_sk_adj_sentence(self, sentence, preproc_utils): 
+    doc = preproc_utils.stanza_model(sentence)
     parsed_sentence = doc.sentences[0]
     for word in parsed_sentence.words: 
         sk_adg_pattern = re.compile('[а-яА-Я]+ск(ий|ому|ого|им|ом|ая|ой|ую|ою|ие|их|им|ими)')
@@ -61,7 +61,7 @@ class LocGenitiveToPossModule(ParaphraseModule):
     # преобразование предложения с прилагательным на -ск- ("московский мэр") в предложение с генетивным поссором ("мэр Москвы")
     def process(self, input_text: str, adjectives_dict: dict, preproc_utils: PreprocessingUtils) -> str:
         changed_sentence = ''
-        doc = self.preproc_utils.stanza_model(input_text)
+        doc = preproc_utils.stanza_model(input_text)
         parsed_sentence = doc.sentences[0]
         sk_adjective = self.find_sk_adjective(parsed_sentence)
         adjective_parent_idx = sk_adjective.head
@@ -119,7 +119,7 @@ class LocGenitiveToPossModule(ParaphraseModule):
         adjectives_dict = self.get_adjectives_dict(self.adjective_dict_path)
         outputs = []
         for input_text in inputs:
-            if self.detect_sk_adj_sentence(input_text): 
+            if self.detect_sk_adj_sentence(input_text, preproc_utils): 
                 paraphrased = self.process(input_text, adjectives_dict, preproc_utils)
                 outputs.append(paraphrased)
             else: 
