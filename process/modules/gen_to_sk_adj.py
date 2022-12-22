@@ -15,7 +15,7 @@ from typing import List
 from process.module import ParaphraseModule
 from process.preprocessing_utils import PreprocessingUtils
 
-class LocSkAdjective(ParaphraseModule):
+class GenLocationToSKAdj(ParaphraseModule):
     def __init__(self, name="loc_gen_poss") -> None:
         super().__init__(name=name)
         self.morph = pymorphy2.MorphAnalyzer()
