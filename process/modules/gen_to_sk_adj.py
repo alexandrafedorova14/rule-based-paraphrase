@@ -63,8 +63,8 @@ class LocSkAdjective(ParaphraseModule):
         poss_adjectives = [elem.text for elem in soup.find_all('string') if len(soup.find_all('string')) > 0]
         return poss_adjectives
 
-    def detect_genetive_location(self, sentence): 
-        doc = self.preproc_utils.stanza_model(sentence)
+    def detect_genetive_location(self, sentence, preproc_utils): 
+        doc = preproc_utils.stanza_model(sentence)
         parsed_sentence = doc.sentences[0]
         for word in parsed_sentence.words: 
             for entity in parsed_sentence.ents: 
@@ -75,7 +75,7 @@ class LocSkAdjective(ParaphraseModule):
 
     def process(self, input_text: str, preproc_utils: PreprocessingUtils) -> str:
         changed_sentence = ''
-        doc = self.preproc_utils.stanza_model(sentence)
+        doc = preproc_utils.stanza_model(sentence)
         parsed_sentence = doc.sentences[0]
         # преобразовываем предложение с генетивом типа "мэр Москвы" в предложение с прилагательным на -ск- (московский мэр)
         sentence_locations = []
@@ -207,7 +207,7 @@ class LocSkAdjective(ParaphraseModule):
     def process_batch(self, inputs: List[str], preproc_utils: PreprocessingUtils) -> List[str]:
         outputs = []
         for input_text in inputs:
-            if self.detect_genetive_location(input_text): 
+            if self.detect_genetive_location(input_text, preproc_utils): 
                 paraphrased = self.process(input_text, preproc_utils)
                 outputs.append(paraphrased)
             else: 
